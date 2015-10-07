@@ -77,7 +77,7 @@ strengthenResult v
     fromRTypeRep $ rep{ty_res = res `strengthen` r', ty_binds = xs}
   where rep = toRTypeRep t
         res = ty_res rep
-        xs  = intSymbol (symbol ("x" :: String)) <$> [1..length $ ty_binds rep]
+        xs  = intSymbol "x" <$> [1..length $ ty_binds rep]
         r'  = U (exprReft (EApp f (mkA <$> vxs)))         mempty mempty
         r   = U (propReft (PBexp $ EApp f (mkA <$> vxs))) mempty mempty
         vxs = dropWhile (isClassType.snd) $ zip xs (ty_args rep)

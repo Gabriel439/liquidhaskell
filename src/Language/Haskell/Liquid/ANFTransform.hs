@@ -14,6 +14,7 @@ import           CoreSyn
 import           CoreUtils                        (exprType)
 import qualified DsMonad
 import           DsMonad                          (initDs)
+import           FastString
 import           GHC                              hiding (exprType)
 import           HscTypes
 import           Id                               (mkSysLocalM)
@@ -36,6 +37,7 @@ import           Language.Fixpoint.Misc     (fst3, errorstar)
 import           Data.Maybe                       (fromMaybe)
 import           Data.List                        (sortBy, (\\))
 import           Control.Applicative
+import qualified Data.Text                        as T
 
 anormalize :: Bool -> HscEnv -> MGIModGuts -> IO [CoreBind]
 anormalize expandFlag hscEnv modGuts
@@ -170,7 +172,7 @@ normalizeLiteral e =
      return $ Var x
 
 freshNormalVar :: Type -> DsM Id
-freshNormalVar = mkSysLocalM (symbolFastString anfPrefix)
+freshNormalVar = mkSysLocalM (fsLit $ T.unpack anfPrefix)
 
 ---------------------------------------------------------------------
 normalize :: VarEnv Id -> CoreExpr -> DsMW CoreExpr

@@ -55,7 +55,7 @@ dataConPSpecType :: DataCon -> DataConP -> SpecType
 dataConPSpecType dc (DataConP _ vs ps ls cs yts rt _) = mkArrow vs ps ls ts' rt'
   where
     (xs, ts) = unzip $ reverse yts
-    mkDSym   = (`mappend` symbol dc) . (`mappend` "_") . symbol
+    mkDSym   = symbol . (`mappend` showPpr dc) . (`mappend` "_") . symbolString
     ys       = mkDSym <$> xs
     tx _  []     []     []     = []
     tx su (x:xs) (y:ys) (t:ts) = (y, subst (F.mkSubst su) t, mempty)

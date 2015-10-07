@@ -22,7 +22,7 @@ import qualified Data.HashSet        as S
 import qualified Data.List           as L
 import qualified Data.Text           as T
 
-import Language.Fixpoint.Names              (symSepName, isPrefixOfSym, takeWhileSym)
+import Language.Fixpoint.Names              (symSepName, symbolRaw, takeWhileSym)
 import Language.Fixpoint.Types
 import Language.Haskell.Liquid.GhcMisc      (stringTyVar)
 import Language.Haskell.Liquid.Types
@@ -31,13 +31,13 @@ import Language.Haskell.Liquid.RefType hiding (shiftVV)
 -------------------------------------------------------------------------
 tidySymbol :: Symbol -> Symbol
 -------------------------------------------------------------------------
-tidySymbol = takeWhileSym (/= symSepName)
+tidySymbol = id -- takeWhileSym (/= symSepName)
 
 
 -------------------------------------------------------------------------
 isTmpSymbol    :: Symbol -> Bool
 -------------------------------------------------------------------------
-isTmpSymbol x  = any (`isPrefixOfSym` x) [anfPrefix, tempPrefix, "ds_"]
+isTmpSymbol x  = any (`T.isPrefixOf` symbolRaw x) [anfPrefix, tempPrefix, "ds_"]
 
 
 -------------------------------------------------------------------------
@@ -60,7 +60,7 @@ tidyVV r@(Reft (va,_))
     v'        = if v `elem` xs then symbol ("v'" :: T.Text) else v
     v         = symbol ("v" :: T.Text)
     xs        = syms r
-    isJunk    = isPrefixOfSym "x"
+    isJunk    = T.isPrefixOf "x" . symbolRaw
 
 tidySymbols :: SpecType -> SpecType
 tidySymbols t = substa tidySymbol $ mapBind dropBind t
@@ -77,15 +77,15 @@ tidyLocalRefas k = mapReft (txStrata . txReft' k)
     txStrata (U r p l)            = U r p (txStr l)
     txReft u                      = u { ur_reft = mapPredReft dropLocals $ ur_reft u }
     dropLocals                    = pAnd . filter (not . any isTmp . syms) . conjuncts
-    isTmp x                       = any (`isPrefixOfSym` x) [anfPrefix, "ds_"]
+    isTmp x                       = any (`T.isPrefixOf` symbolRaw x) [anfPrefix, "ds_"]
     txStr                         = filter (not . isSVar)
 
 
 tidyDSymbols :: SpecType -> SpecType
 tidyDSymbols t = mapBind tx $ substa tx t
   where
-    tx         = bindersTx [x | x <- syms t, isTmp x]
-    isTmp      = (tempPrefix `isPrefixOfSym`)
+    tx         = bindersTx [x | x <- syms t, isTmp (symbolRaw x)]
+    isTmp      = (tempPrefix `T.isPrefixOf`)
 
 tidyFunBinds :: SpecType -> SpecType
 tidyFunBinds t = mapBind tx $ substa tx t

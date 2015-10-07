@@ -437,10 +437,11 @@ instance Symbolic Var where
 
 varSymbol ::  Var -> Symbol
 varSymbol v
-  | us `isSuffixOfSym` vs = vs
-  | otherwise             = vs `mappend` singletonSym symSepName `mappend` us
-  where us  = symbol $ showPpr $ getDataConVarUnique v
-        vs  = symbol $ getName v
+  -- FIXME: do we actually need this check?
+  | us `L.isSuffixOf` vs = symbol vs
+  | otherwise            = symbol $ vs `mappend` (symSepName : us)
+  where us  = showPpr $ getDataConVarUnique v
+        vs  = showPpr $ getName v
 
 
 qualifiedNameSymbol n = symbol $

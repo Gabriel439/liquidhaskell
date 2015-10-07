@@ -381,7 +381,7 @@ predicate1P
     symsP'       = do ss    <- symsP
                       fs    <- mapM refreshSym (fst <$> ss)
                       return $ zip ss fs
-    refreshSym s = intSymbol s <$> freshIntP
+    refreshSym s = intSymbol (symbolText s) <$> freshIntP
 
 mmonoPredicateP
    = try (angles $ angles monoPredicate1P)
@@ -845,9 +845,9 @@ dataConP
 
 dataConNameP
   =  try upperIdP
- <|> pwr <$> parens (idP bad)
+ <|> symbol . pwr <$> parens (idP bad)
   where
-     idP p  = symbol <$> many1 (satisfy (not . p))
+     idP p  = many1 (satisfy (not . p))
      bad c  = isSpace c || c `elem` ("(,)" :: String)
      pwr s  = "(" <> s <> ")"
 
