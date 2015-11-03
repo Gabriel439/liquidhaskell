@@ -232,8 +232,8 @@ pad msg _ xs ys
     nxs         = length xs
     nys         = length ys
 
-substPredP msg su@(p, RProp ss _) (RProp s t)
-  = RProp ss' $ substPred (msg ++ ": substPredP") su t
+substPredP msg su@(p, RProp ss tt') pp@(RProp s t)
+  = RProp ss' $ substPred (msg ++ ": substPredP") (p, RProp ss' tt') t
  where
    ss' = drop n ss ++  s
    n   = length ss - length (freeArgsPs p t)
