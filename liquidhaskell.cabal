@@ -21,6 +21,7 @@ data-files: include/*.hquals
           , include/Control/*.spec
           , include/Data/*.hquals
           , include/Data/*.spec
+          , include/Data/ByteString/*.spec
           , include/Data/Text/*.spec
           , include/Data/Text/Fusion/*.spec
           , include/Data/Text/Lazy/*.spec
